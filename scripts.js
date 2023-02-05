@@ -2,7 +2,7 @@
 const gameBoard = (() => {
 
     // Create a gameboard array
-    boardArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    boardArray = [];
 
     // Make the array public
     return {boardArray};
@@ -18,19 +18,58 @@ const displayController = (() => {
     // Create a function to iterate through the buttons to update their innerHTML to the matching array index
     const updateDisplay = () => {
         for (let i = 0; i < boardArray.length; i++) {
+            if (boardArray[i] !== undefined) {
             gameButtons[i].innerHTML = boardArray[i];
+            };
         };
     }
 
-    // Make the updateDisplay function accessible to public using displayController.updateDisplay();
+    // Create a function that checks for win
+    const checkForWin = () => {
+        console.log("Win check")
+    };
+
+    // Create a function that checks for a tie
+    const checkforTie = () => {
+        console.log("Tie check")
+
+    };
+
+    // Start the game with player one's turn
+    let playerOneTurn = true;
+
+
+    // Add event listeners to each button
+    for (btn of gameButtons) {
+        btn.addEventListener('click', function() {
+
+            if (playerOneTurn === true) {
+                gameBoard.boardArray[this.id] = "X"
+                playerOneTurn = false;
+            }
+            else {
+                gameBoard.boardArray[this.id] = "O"
+                playerOneTurn = true;
+            }
+            updateDisplay();
+            checkForWin();
+            checkforTie();
+        });
+    }
+    
+    // Make the updateDisplay function accessible to public (maybe I don't need to do this)
     return {updateDisplay};
 
 })();
 
 // Create a player object factory
 const Player = (name, marker) => {
-    return {name, marker};
-}
+    let wins = 0;
+    let losses = 0
+    const getWins = () => wins;
+    const getLosses = () => losses;
+    return {name, marker, getWins, getLosses};
+};
 
 // Eventually I might make this dynamic, but for now, here are the two players
 const playerOne = Player('Ryan', 'X');
