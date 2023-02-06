@@ -1,15 +1,14 @@
 // Create a player object factory
     const Player = (name, marker) => {
     let wins = 0;
-    let losses = 0;
-    const getWins = () => wins;
-    const getLosses = () => losses;
-    return { name, marker, getWins, getLosses };
+    const gotAWin = () => wins++;
+    const winCount = () => wins;
+    return { name, marker, gotAWin, winCount };
   };
 
-// Eventually I might make this dynamic, but for now, here are the two players
-const playerOne = Player("Ryan", "X");
-const playerTwo = Player("Alex", "O");
+
+const playerOne = Player(prompt("Enter Player One's name"), "X");
+const playerTwo = Player(prompt("Enter Player Two's name"), "O");
 
 // I had to scope this globally, I couldn't fucking figure it out
 let playerOneTurn = true;
@@ -21,6 +20,7 @@ const gameBoard = (() => {
   
     // Grab DOM elements
     const gameNotice = document.querySelector(".game-notices");
+    const scoreNotice = document.querySelector(".scores");
     const resetButton = document.querySelector(".next-round");
     
     gameNotice.innerHTML = `Let's have ${playerOne.name} go first this time!`;
@@ -39,6 +39,7 @@ const gameBoard = (() => {
         (boardArray[2] === z && boardArray[4] === z && boardArray[6] === z)
       ) {
         gameNotice.innerHTML = `${player.name} has won the game`;
+        player.gotAWin();
         gameEndDuties();
       }
     };
@@ -57,6 +58,7 @@ const gameBoard = (() => {
     // Everything to reset the board after game over
     function gameEndDuties() {
       resetButton.style.display = "block";
+      scoreNotice.innerHTML = `${playerOne.name}'s score: ${playerOne.winCount()}<br><br> ${playerTwo.name}'s score: ${playerTwo.winCount()}`;
       resetButton.addEventListener("click", () => {
         for (btn of displayController.gameButtons) {
           btn.innerHTML = "";
