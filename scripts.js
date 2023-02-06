@@ -1,79 +1,117 @@
-// Create a gameboard object using module pattern
-const gameBoard = (() => {
-
-    // Create a gameboard array
-    boardArray = [];
-
-    // Make the array public
-    return {boardArray};
-
-})();
-
-// Create a display controller that will keep the buttons in line with the array values
-const displayController = (() => {
-
-    // Get all the buttons
-    const gameButtons = document.querySelectorAll('.game-button');
-
-    // Create a function to iterate through the buttons to update their innerHTML to the matching array index
-    const updateDisplay = () => {
-        for (let i = 0; i < boardArray.length; i++) {
-            if (boardArray[i] !== undefined) {
-            gameButtons[i].innerHTML = boardArray[i];
-            };
-        };
-    }
-
-    // Create a function that checks for win
-    const checkForWin = () => {
-        console.log("Win check")
-    };
-
-    // Create a function that checks for a tie
-    const checkforTie = () => {
-        console.log("Tie check")
-
-    };
-
-    // Start the game with player one's turn
-    let playerOneTurn = true;
-
-
-    // Add event listeners to each button
-    for (btn of gameButtons) {
-        btn.addEventListener('click', function() {
-
-            if (playerOneTurn === true) {
-                gameBoard.boardArray[this.id] = "X"
-                playerOneTurn = false;
-            }
-            else {
-                gameBoard.boardArray[this.id] = "O"
-                playerOneTurn = true;
-            }
-            updateDisplay();
-            checkForWin();
-            checkforTie();
-        });
-    }
-    
-    // Make the updateDisplay function accessible to public (maybe I don't need to do this)
-    return {updateDisplay};
-
-})();
-
 // Create a player object factory
-const Player = (name, marker) => {
+    const Player = (name, marker) => {
     let wins = 0;
-    let losses = 0
+    let losses = 0;
     const getWins = () => wins;
     const getLosses = () => losses;
-    return {name, marker, getWins, getLosses};
-};
+    return { name, marker, getWins, getLosses };
+  };
 
 // Eventually I might make this dynamic, but for now, here are the two players
-const playerOne = Player('Ryan', 'X');
-const playerTwo = Player('Alex', 'O');
+const playerOne = Player("Ryan", "X");
+const playerTwo = Player("Alex", "O");
 
-// TEMPORARY INVOCATION OF THIS FUNCTION SO I KNOW ITS WORKING
-displayController.updateDisplay();
+// I had to scope this globally, I couldn't fucking figure it out
+let playerOneTurn = true;
+
+// GAMEBOARD OBJECT
+const gameBoard = (() => {
+    // Create a gameboard array
+    boardArray = [];
+  
+    // Grab DOM elements
+    const gameNotice = document.querySelector(".game-notices");
+    const resetButton = document.querySelector(".next-round");
+    
+    gameNotice.innerHTML = `Let's have ${playerOne.name} go first this time!`;
+  
+    // Check for win function
+    const checkForWin = (player) => {
+      const z = player.marker;
+      if (
+        (boardArray[0] === z && boardArray[1] === z && boardArray[2] === z) ||
+        (boardArray[3] === z && boardArray[4] === z && boardArray[5] === z) ||
+        (boardArray[6] === z && boardArray[7] === z && boardArray[8] === z) ||
+        (boardArray[0] === z && boardArray[3] === z && boardArray[6] === z) ||
+        (boardArray[1] === z && boardArray[4] === z && boardArray[7] === z) ||
+        (boardArray[2] === z && boardArray[5] === z && boardArray[8] === z) ||
+        (boardArray[0] === z && boardArray[4] === z && boardArray[8] === z) ||
+        (boardArray[2] === z && boardArray[4] === z && boardArray[6] === z)
+      ) {
+        gameNotice.innerHTML = `${player.name} has won the game`;
+        gameEndDuties();
+      }
+    };
+  
+    // Check for tie function
+    let markerCount = 0;
+    const checkForTie = () => {
+      if (markerCount < 8) {
+        markerCount++;
+      } else {
+        gameNotice.innerHTML = "It looks like we have a tie";
+        gameEndDuties();
+      }
+    };
+  
+    // Everything to reset the board after game over
+    function gameEndDuties() {
+      resetButton.style.display = "block";
+      resetButton.addEventListener("click", () => {
+        for (btn of displayController.gameButtons) {
+          btn.innerHTML = "";
+        }
+        boardArray.length = 0;
+        markerCount = 0;
+        resetButton.style.display = "none";
+        if (playerOneTurn === true) {
+            gameNotice.innerHTML = `Let's have ${playerOne.name} go first this time!`;
+        }
+        else if (playerOneTurn === false) {
+            gameNotice.innerHTML = `Let's have ${playerTwo.name} go first this time!`;
+        }
+      });
+    }
+    return { boardArray, checkForWin, checkForTie, gameNotice };
+  })();
+  
+  // DISPLAY CONTROLLER OBJECT
+  const displayController = (() => {
+    // Get all the buttons
+    const gameButtons = document.querySelectorAll(".game-button");
+  
+    // Update display function
+    const updateDisplay = () => {
+      for (let i = 0; i < boardArray.length; i++) {
+        if (boardArray[i] !== undefined) {
+          gameButtons[i].innerHTML = boardArray[i];
+        }
+      }
+    };
+  
+    // Make each button call the makeMove function
+    for (btn of gameButtons) {
+      btn.addEventListener("click", makeMove);
+    }
+  
+
+    // The makeMove function checks whose turn, makes sure the spot in the array is empty, marks the board, checks for game end
+    function makeMove() {
+        gameBoard.gameNotice.innerHTML = "";
+      if (playerOneTurn === true && gameBoard.boardArray[this.id] === undefined) {
+        gameBoard.boardArray[this.id] = playerOne.marker;
+        playerOneTurn = false;
+        gameBoard.checkForTie();
+        gameBoard.checkForWin(playerOne);
+      } else if (gameBoard.boardArray[this.id] === undefined) {
+        gameBoard.boardArray[this.id] = playerTwo.marker;
+        playerOneTurn = true;
+        gameBoard.checkForTie();
+        gameBoard.checkForWin(playerTwo);
+      }
+      updateDisplay();
+    }
+  
+    return { updateDisplay, gameButtons };
+  })();
+

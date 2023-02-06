@@ -1,9 +1,40 @@
-.gameboard-container {
-    display: grid;
-    grid-template-columns: 60px 60px 60px;
-    grid-template-rows: 60px 60px 60px;
+body {
+    background-color: #579BB1;
+    display: flex;
+    justify-content: center;
 }
 
-.gameboard-container > button {
-    font-size: xx-large;
+.page-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
+.gameboard-container {
+    display: grid;
+    grid-template-columns: 80px 80px 80px;
+    grid-template-rows: 80px 80px 80px;
+}
+
+button.game-button {
+    font-size: 47px;
+    border-width: 2px;
+    border-color: black;
+    background-color: #E1D7C6;
+    
+}
+
+button.next-round {
+    display: none;
+    background-color: #E1D7C6;
+    width: 160px;
+    height: 40px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 5px;
+}
+
+.game-notices {
+    height: 30px;
+}
+
+
