@@ -12,6 +12,7 @@ const playerTwo = Player(prompt("Enter Player Two's name"), "O");
 
 // I had to scope this globally, I couldn't fucking figure it out
 let playerOneTurn = true;
+let gameOver = false;
 
 // GAMEBOARD OBJECT
 const gameBoard = (() => {
@@ -39,6 +40,7 @@ const gameBoard = (() => {
         (boardArray[2] === z && boardArray[4] === z && boardArray[6] === z)
       ) {
         gameNotice.innerHTML = `${player.name} has won the game`;
+        gameOver = true;
         player.gotAWin();
         gameEndDuties();
       }
@@ -65,6 +67,7 @@ const gameBoard = (() => {
         }
         boardArray.length = 0;
         markerCount = 0;
+        gameOver = false;
         resetButton.style.display = "none";
         if (playerOneTurn === true) {
             gameNotice.innerHTML = `Let's have ${playerOne.name} go first this time!`;
@@ -95,10 +98,13 @@ const gameBoard = (() => {
     for (btn of gameButtons) {
       btn.addEventListener("click", makeMove);
     }
-  
+ 
 
     // The makeMove function checks whose turn, makes sure the spot in the array is empty, marks the board, checks for game end
     function makeMove() {
+      if (gameOver === true) {
+        return;
+      };
         gameBoard.gameNotice.innerHTML = "";
       if (playerOneTurn === true && gameBoard.boardArray[this.id] === undefined) {
         gameBoard.boardArray[this.id] = playerOne.marker;
