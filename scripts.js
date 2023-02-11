@@ -17,7 +17,7 @@ let gameOver = false;
 // GAMEBOARD OBJECT
 const gameBoard = (() => {
     // Create a gameboard array
-    boardArray = [];
+    let boardArray = [];
   
     // Grab DOM elements
     const gameNotice = document.querySelector(".game-notices");
@@ -62,7 +62,7 @@ const gameBoard = (() => {
       resetButton.style.display = "block";
       scoreNotice.innerHTML = `${playerOne.name}'s score: ${playerOne.winCount()}<br><br> ${playerTwo.name}'s score: ${playerTwo.winCount()}`;
       resetButton.addEventListener("click", () => {
-        for (btn of displayController.gameButtons) {
+        for (let btn of displayController.gameButtons) {
           btn.innerHTML = "";
         }
         boardArray.length = 0;
@@ -87,15 +87,15 @@ const gameBoard = (() => {
   
     // Update display function
     const updateDisplay = () => {
-      for (let i = 0; i < boardArray.length; i++) {
-        if (boardArray[i] !== undefined) {
-          gameButtons[i].innerHTML = boardArray[i];
+      for (let i = 0; i < gameBoard.boardArray.length; i++) {
+        if (gameBoard.boardArray[i] !== undefined) {
+          gameButtons[i].innerHTML = gameBoard.boardArray[i];
         }
       }
     };
   
     // Make each button call the makeMove function
-    for (btn of gameButtons) {
+    for (let btn of gameButtons) {
       btn.addEventListener("click", makeMove);
     }
  
@@ -104,7 +104,7 @@ const gameBoard = (() => {
     function makeMove() {
       if (gameOver === true) {
         return;
-      };
+      }
         gameBoard.gameNotice.innerHTML = "";
       if (playerOneTurn === true && gameBoard.boardArray[this.id] === undefined) {
         gameBoard.boardArray[this.id] = playerOne.marker;
